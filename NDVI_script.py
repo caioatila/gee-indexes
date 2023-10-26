@@ -51,7 +51,7 @@ def calculate_ndwi(image):
     return image.addBands(ndwi)
 
 
-    def call_single_map(lat, lon, collection_name = 'NOAA/GOES/16/MCMIPC', bands=bands, radius=40000):
+def call_single_map(lat, lon, collection_name = 'NOAA/GOES/16/MCMIPC', bands=bands, radius=40000):
 
     goes_collection = ee.ImageCollection(collection_name)
 
@@ -112,6 +112,6 @@ lon = -102.84
 
 ####### Function Call ###########
 map2 = call_single_map(lat, lon)
-map2.to_html(filename="html_NDVI.html", title='My Map', width='100%', height='880px')
+map2.to_html(filename="teste_NDVI.html", title='My Map', width='100%', height='880px')
 
 #############################################################################################################################################################################################
