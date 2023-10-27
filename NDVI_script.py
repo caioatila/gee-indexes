@@ -65,14 +65,21 @@ def call_single_map(lat, lon, collection_name = 'NOAA/GOES/16/MCMIPC', bands=ban
 
     # Calculate the indexes
     #indexes = goes_collection.filterDate(period).select(bands).map(applyScaleandOffset).map(calculate_ndvi).map(calculate_ndwi).reduce(ee.Reducer.median()).clip(roi)
-    indexes = goes_collection.filterDate(period).select(bands).map(applyScaleandOffset).map(calculate_ndvi).reduce(ee.Reducer.median()).clip(roi)
+    #indexes = goes_collection.filterDate(period).select(bands).map(applyScaleandOffset).map(calculate_ndvi).reduce(ee.Reducer.median()).clip(roi)
+    image_file = goes_collection.filterDate(period).select(bands).map(applyScaleandOffset).map(calculate_ndvi).reduce(ee.Reducer.median())
+    indexes = image_file.clip(roi)
+
 
     # Split the map
     # Add the image to the map.
     ndviParams = {'bands': ['NDVI_median'],
-                    'min': -1,
+                    'min': 0,
                     'max': 1,
-                    'palette': ['blue', 'white', 'green']}
+                    'palette': ["#8f2723", "#8f2723", "#8f2723", "#8f2723", "#af201b", "#af201b", "#af201b", "#af201b", "#ce4a2e", "#ce4a2e", "#ce4a2e", "#ce4a2e", 
+              "#df744a", "#df744a", "#df744a", "#df744a", "#f0a875", "#f0a875", "#f0a875", "#f0a875", "#fad398", "#fad398", "#fad398", "#fad398",
+              "#fff8ba",
+              "#d8eda0", "#d8eda0", "#d8eda0", "#d8eda0", "#bddd8a", "#bddd8a", "#bddd8a", "#bddd8a", "#93c669", "#93c669", "#93c669", "#93c669", 
+              "#5da73e", "#5da73e", "#5da73e", "#5da73e", "#3c9427", "#3c9427", "#3c9427", "#3c9427", "#235117", "#235117", "#235117", "#235117"]}#['blue', 'white', 'green']}
 
     
     ndwiParams = {'bands': ['NDWI_median'],
@@ -100,7 +107,12 @@ def call_single_map(lat, lon, collection_name = 'NOAA/GOES/16/MCMIPC', bands=ban
 
     #m.addLayerControl()
 
-    return m
+    #return m
+    m.to_html(filename="ROI_NDVI.html", title='My Map', width='100%', height='880px')
+
+    mean_ndvi = image_file.select('NDVI_median').reduceRegion(reducer=ee.Reducer.mean(), geometry=roi, scale=2000).getInfo()
+
+    return mean_ndvi['NDVI_median'], m
 
 
 
@@ -111,7 +123,7 @@ lat = 37.25
 lon = -102.84
 
 ####### Function Call ###########
-map2 = call_single_map(lat, lon)
-map2.to_html(filename="teste_NDVI.html", title='My Map', width='100%', height='880px')
-
+mean_NDVI, _ = call_single_map(lat, lon)
+#map2.to_html(filename="teste_NDVI.html", title='My Map', width='100%', height='880px')
+print(mean_NDVI)
 #############################################################################################################################################################################################
